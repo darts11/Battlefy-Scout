@@ -95,8 +95,8 @@
 									const swissRes = await fetch(swissurl);
     								const swissData = await swissRes.json();
 
-    								if (swissData.standings) {
-      									swissData.standings.forEach(player => {
+    								if (swissData) {
+      									swissData.forEach(player => {
         									if (player.name && !standing.includes(player.name)) {
           										standing.push(player.name)
         									}
@@ -116,10 +116,10 @@
 											else if (player.team.name) nameTeam.set(player.team.name, player.customFields[1].value)
       									});
     								}
-									console.log(nameTeam);
+
 									standing.forEach(player => {
 										const li = document.createElement('li');
-										li.textContent = player + nameTeam.get(player);
+										li.textContent = player +" "+ nameTeam.get(player);
 										document.getElementById('myList').appendChild(li);
 									});
 								}
