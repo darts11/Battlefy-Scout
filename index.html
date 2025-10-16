@@ -51,7 +51,7 @@
 								while(list.firstChild) {
 									list.removeChild(list.firstChild);
 								}
-								
+
 								event.preventDefault();
 								const formData = new FormData(formEl);
 								let link = formData.get('battlefylink');
@@ -81,17 +81,16 @@
 									const tournamentResponse = await fetch(mainurl);
 									const tournamentData = await tournamentResponse.json();
 									const [swissID, topcutID] = tournamentData.stageIDs || [];
-									console.log(swissID, topcutID);
 
 									const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
 									const tcResponse = await fetch(tcurl);
 									const tcData = await tcResponse.json();
 									if (tcData.standings) {
       									tcData.standings.forEach(player => {
-        									if (player.name) standing.push(player.name);
+        									if (player.name) standing.push(player.name)
+											else if(player.team.name) standing.push(player.team.name)
       									});
     								}
-									console.log(standing);
 									const swissurl = "https://dtmwra1jsgyb0.cloudfront.net/stages/" + swissID + "/latest-round-standings";
 									const swissRes = await fetch(swissurl);
     								const swissData = await swissRes.json();
@@ -99,21 +98,22 @@
     								if (swissData.standings) {
       									swissData.standings.forEach(player => {
         									if (player.name && !standing.includes(player.name)) {
-          										standing.push(player.name);
+          										standing.push(player.name)
         									}
 											else if(player.team.name && !standing.includes(player.team.name)){
-												standing.push(player.team.name);
+												standing.push(player.team.name)
 											}
       									});
     								}
-									console.log(standing);
+
 									const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
 									const teamsRes = await fetch(teamsUrl);
     								const teamsData = await teamsRes.json();
 									let nameTeam = new Map();
 									if (teamsData) {
       									teamsData.forEach(player => {
-        									nameTeam.set(player.name, player.customFields[1].value)
+        									if (player.name) nameTeam.set(player.name, player.customFields[1].value)
+											else if (player.team.name) nameTeam.set(player.team.name, player.customFields[1].value)
       									});
     								}
 									console.log(nameTeam);
