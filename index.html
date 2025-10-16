@@ -46,6 +46,7 @@
 								const formData = new FormData(formEl);
 								let link = formData.get('battlefylink');
 								let splitLink = link.split('/');
+								console.log(splitLink);
 								let tourid = "";
 								if(splitLink[5].length == 24){
 									tourid = splitLink[5];
