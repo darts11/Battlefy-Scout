@@ -40,19 +40,31 @@
 				<!-- Two -->
 					<section id="two">
 						<script>
-							const formEl = document.querySelector('.form');
-							formEl.addEventListener('submit', async (event) => {
+							document.addEventListener('DOMContentLoaded', function() {
+								const formEl = document.querySelector('.form');
+								if (!formEl) {
+									console.error('Form element not found');
+									return;
+								}
+								formEl.addEventListener('submit', async (event) => {
 								event.preventDefault();
 								const formData = new FormData(formEl);
 								let link = formData.get('battlefylink');
+								
+								// Check if link is null or empty
+								if (!link || link.trim() === '') {
+									alert('Please enter a Battlefy link');
+									return;
+								}
+								
 								let splitLink = link.split('/');
 								let tourid = "";
-								if(splitLink[5].length == 24){
+								if(splitLink[5] && splitLink[5].length == 24){
 									tourid = splitLink[5];
 								}
 								else{
 									for(let i = 0; i < splitLink.length; i++){
-										if(splitLink[i].length == 24){
+										if(splitLink[i] && splitLink[i].length == 24){
 											tourid = splitLink[i];
 										}
 									}
@@ -106,6 +118,7 @@
 									console.error("Error fetching tournament data:", error);
 								}
 							});
+						});
 						</script>
 						<ol id="myList">
     						
