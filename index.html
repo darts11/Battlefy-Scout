@@ -108,6 +108,11 @@
       									});
     								}
 
+									let list = document.getElementById('myList');
+									while(list.firstChild ){
+  										list.removeChild(list.firstChild );
+									}
+
 									standing.forEach(player => {
 										const li = document.createElement('li');
 										li.textContent = player + nameTeam.get(player);
@@ -115,7 +120,7 @@
 									});
 								}
 								catch{
-									console.error("Error fetching tournament data:", error);
+									alert('Standings failed to load. Check link or refresh.');
 								}
 							});
 						});
