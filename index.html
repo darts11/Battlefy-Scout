@@ -98,7 +98,7 @@
       									});
     								}
 
-									const teamsUrl = "https://api.battlefy.com/tournaments/" + swissID + "/teams";
+									const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
 									const teamsRes = await fetch(teamsUrl);
     								const teamsData = await teamsRes.json();
 									let nameTeam = new Map();
