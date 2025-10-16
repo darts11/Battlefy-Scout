@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<!--
+	Strata by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Strata by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="inner">
+					<a href="#" class="image avatar"><img src="images/avatar.jpg" alt="" /></a>
+					<h1><strong>Battlefy Scouting Tool</strong><br />
+					created by <a href="https://darts11.github.io/">Christopher Han</a>.</h1>
+				</div>
+			</header>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- One -->
+					<section id="one">
+						<header class="major">
+							<h2>Enter the link below:</h2>
+						</header>
+						<br>
+						<form class="form">
+							<input type="text" id="battlefylink" placeholder="e.g https://battlefy.com/victoryroad/victory-road-october-challenge/68e3e3c1af568f00460c7f8c/">
+							<input type="submit" value="Submit">
+						</form>
+					</section>
+
+				<!-- Two -->
+					<section id="two">
+						<script>
+							const formEl = document.querySelector('.form');
+							formEl.addEventListener('submit', async (event) => {
+								event.preventDefault();
+								const formData = new FormData(formEl);
+								let link = formData.get('battlefylink');
+								let splitLink = link.split('/');
+								let tourid = "";
+								if(splitLink[5].length == 24){
+									tourid = splitLink[5];
+								}
+								else{
+									for(let i = 0; i < splitLink.length; i++){
+										if(splitLink[i].length == 24){
+											tourid = splitLink[i];
+										}
+									}
+								}
+
+								let mainurl = "https://api.battlefy.com/tournaments/" + tourid;
+								let standing = [];
+								try{
+									const tournamentResponse = await fetch(mainurl);
+									const tournamentData = await tournamentResponse.json();
+									const [swissID, topcutID] = tournamentData.stageIDs || [];
+
+									const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
+									const tcResponse = await fetch(tcurl);
+									const tcData = await tcResponse.json();
+									if (tcData.standings) {
+      									tcData.standings.forEach(player => {
+        									if (player.name) standing.push(player.name);
+      									});
+    								}
+
+									const swissurl = "https://dtmwra1jsgyb0.cloudfront.net/stages/" + swissID + "/latest-round-standings";
+									const swissRes = await fetch(swissurl);
+    								const swissData = await swissRes.json();
+
+    								if (swissData.standings) {
+      									swissData.standings.forEach(player => {
+        									if (player.name && !standing.includes(player.name)) {
+          										standing.push(player.name);
+        									}
+      									});
+    								}
+
+									const teamsUrl = "https://api.battlefy.com/tournaments/" + swissID + "/teams";
+									const teamsRes = await fetch(teamsUrl);
+    								const teamsData = await teamsRes.json();
+									let nameTeam = new Map();
+									if (teamsData) {
+      									teamsData.forEach(player => {
+        									nameTeam.set(player.name, player.customFields[1].value)
+      									});
+    								}
+
+									standing.forEach(player => {
+										const li = document.createElement('li');
+										li.textContent = player + nameTeam.get(player);
+										document.getElementById('myList').appendChild(li);
+									});
+								}
+								catch{
+									console.error("Error fetching tournament data:", error);
+								}
+							});
+						</script>
+						<ol id="myList">
+    						
+  						</ol>
+					</section>
+
+				
+			</div>
+		<!-- Footer -->
+			<footer id="footer">
+				<div class="inner">
+					<ul class="icons">
+						<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+						<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>
+						<li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; Untitled</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.poptrox.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
