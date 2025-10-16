@@ -47,6 +47,11 @@
 									return;
 								}
 								formEl.addEventListener('submit', async (event) => {
+								let list = document.getElementById('myList');
+								while(list.firstChild) {
+									list.removeChild(list.firstChild);
+								}
+								
 								event.preventDefault();
 								const formData = new FormData(formEl);
 								let link = formData.get('battlefylink');
@@ -68,12 +73,6 @@
 											tourid = splitLink[i];
 										}
 									}
-								}
-
-								// Clear the list immediately when form is submitted
-								let list = document.getElementById('myList');
-								while(list.firstChild) {
-									list.removeChild(list.firstChild);
 								}
 
 								let mainurl = "https://api.battlefy.com/tournaments/" + tourid;
