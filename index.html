@@ -32,7 +32,7 @@
 						</header>
 						<br>
 						<form class="form">
-							<input type="text" id="battlefylink" placeholder="e.g https://battlefy.com/victoryroad/victory-road-october-challenge/68e3e3c1af568f00460c7f8c/">
+							<input type="text" name="battlefylink" placeholder="e.g https://battlefy.com/victoryroad/victory-road-october-challenge/68e3e3c1af568f00460c7f8c/">
 							<input type="submit" value="Submit">
 						</form>
 					</section>
@@ -46,7 +46,6 @@
 								const formData = new FormData(formEl);
 								let link = formData.get('battlefylink');
 								let splitLink = link.split('/');
-								console.log(splitLink);
 								let tourid = "";
 								if(splitLink[5].length == 24){
 									tourid = splitLink[5];
