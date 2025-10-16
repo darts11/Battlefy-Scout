@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Strata by HTML5 UP</title>
+		<title>VGC Scouting Tool</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -16,7 +16,7 @@
 		<!-- Header -->
 			<header id="header">
 				<div class="inner">
-					<a href="#" class="image avatar"><img src="images/avatar.jpg" alt="" /></a>
+					<a href="#" class="image avatar"><img src="images/avatar.png" alt="" /></a>
 					<h1><strong>Battlefy Scouting Tool</strong><br />
 					created by <a href="https://darts11.github.io/">Christopher Han</a>.</h1>
 				</div>
@@ -119,7 +119,11 @@
 
 									standing.forEach(player => {
 										const li = document.createElement('li');
-										li.textContent = player +"		"+ <a href = "{nameTeam.get(player)}">nameTeam.get(player)</a>;
+										const paste = document.createElement('a');
+										paste.setAttribute('href', `${nameTeam.get(player)}`);
+										paste.textContent('Paste');
+										li.appendChild(player + "	");
+										li.appendChild(paste);
 										document.getElementById('myList').appendChild(li);
 									});
 								}
@@ -143,9 +147,6 @@
 						<li><a href="https://x.com/dartsvg" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
 						<li><a href="https://github.com/darts11" class="icon brands fa-github"><span class="label">Github</span></a></li>
 						<li><a href="https://darts11.github.io/" class="icon solid fa-envelope"><span class="label">Portfolio</span></a></li>
-					</ul>
-					<ul class="copyright">
-						<li>&copy; Untitled</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 					</ul>
 				</div>
 			</footer>
