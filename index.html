@@ -119,11 +119,18 @@
 
 									standing.forEach(player => {
 										const li = document.createElement('li');
-										const paste = document.createElement('a');
-										paste.setAttribute('href', `${nameTeam.get(player)}`);
-										paste.textContent('Paste');
-										li.appendChild(player + "	");
-										li.appendChild(paste);
+										const playerText = document.createTextNode(player + "\t");
+										li.appendChild(playerText);
+										
+										const pasteUrl = nameTeam.get(player);
+										if (pasteUrl) {
+											const paste = document.createElement('a');
+											paste.setAttribute('href', pasteUrl);
+											paste.textContent = 'Paste';
+											paste.setAttribute('target', '_blank'); // Open in new tab
+											li.appendChild(paste);
+										}
+										
 										document.getElementById('myList').appendChild(li);
 									});
 								}
