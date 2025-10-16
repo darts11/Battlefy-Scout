@@ -105,32 +105,43 @@
 									let standing = [];
 									
 									try{
-										const tournamentResponse = await fetch(mainurl);
-										const tournamentData = await tournamentResponse.json();
-										const [swissID, topcutID] = tournamentData.stageIDs || [];
+									const tournamentResponse = await fetch(mainurl);
+									const tournamentData = await tournamentResponse.json();
+									console.log('Tournament data:', tournamentData);
+									console.log('Stage IDs:', tournamentData.stageIDs);
+									const [swissID, topcutID] = tournamentData.stageIDs || [];
+									console.log('Swiss ID:', swissID, 'TopCut ID:', topcutID);									const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
+									console.log('TopCut URL:', tcurl);
+									const tcResponse = await fetch(tcurl);
+									console.log('TopCut response status:', tcResponse.status);
+									const tcData = await tcResponse.json();
+									console.log('TopCut data:', tcData);
+									if (tcData.standings) {
+										console.log('TopCut standings found:', tcData.standings.length, 'players');
+										tcData.standings.forEach(player => {
+											if (player.name) standing.push(player.name);
+										});
+									} else {
+										console.log('No TopCut standings found');
+									}									console.log('Standing after TopCut:', standing.length, 'players');
 
-										const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
-										const tcResponse = await fetch(tcurl);
-										const tcData = await tcResponse.json();
-										if (tcData.standings) {
-											tcData.standings.forEach(player => {
-												if (player.name) standing.push(player.name);
-											});
-										}
+									const swissurl = "https://dtmwra1jsgyb0.cloudfront.net/stages/" + swissID + "/latest-round-standings";
+									console.log('Swiss URL:', swissurl);
+									const swissRes = await fetch(swissurl);
+									console.log('Swiss response status:', swissRes.status);
+									const swissData = await swissRes.json();
+									console.log('Swiss data:', swissData);
 
-										const swissurl = "https://dtmwra1jsgyb0.cloudfront.net/stages/" + swissID + "/latest-round-standings";
-										const swissRes = await fetch(swissurl);
-										const swissData = await swissRes.json();
-
-										if (swissData.standings) {
-											swissData.standings.forEach(player => {
-												if (player.name && !standing.includes(player.name)) {
-													standing.push(player.name);
-												}
-											});
-										}
-
-										const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
+									if (swissData.standings) {
+										console.log('Swiss standings found:', swissData.standings.length, 'players');
+										swissData.standings.forEach(player => {
+											if (player.name && !standing.includes(player.name)) {
+												standing.push(player.name);
+											}
+										});
+									} else {
+										console.log('No Swiss standings found');
+									}										const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
 										const teamsRes = await fetch(teamsUrl);
 										const teamsData = await teamsRes.json();
 										let nameTeam = new Map();
