@@ -110,7 +110,8 @@
 									console.log('Tournament data:', tournamentData);
 									console.log('Stage IDs:', tournamentData.stageIDs);
 									const [swissID, topcutID] = tournamentData.stageIDs || [];
-									console.log('Swiss ID:', swissID, 'TopCut ID:', topcutID);									const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
+									console.log('Swiss ID:', swissID, 'TopCut ID:', topcutID);									
+									const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
 									console.log('TopCut URL:', tcurl);
 									const tcResponse = await fetch(tcurl);
 									console.log('TopCut response status:', tcResponse.status);
@@ -118,8 +119,14 @@
 									console.log('TopCut data:', tcData);
 									if (tcData.standings) {
 										console.log('TopCut standings found:', tcData.standings.length, 'players');
-										tcData.standings.forEach(player => {
-											if (player.name) standing.push(player.name);
+										console.log('First few TopCut players:', tcData.standings.slice(0, 5));
+										tcData.standings.forEach((player, index) => {
+											if (player.name) {
+												standing.push(player.name);
+												console.log(`Added TopCut player ${index + 1}:`, player.name);
+											} else {
+												console.log(`TopCut player ${index + 1} has no name:`, player);
+											}
 										});
 									} else {
 										console.log('No TopCut standings found');
@@ -132,8 +139,15 @@
 									const swissData = await swissRes.json();
 									console.log('Swiss data:', swissData);
 
-									if (swissData.standings) {
-										console.log('Swiss standings found:', swissData.standings.length, 'players');
+									if (Array.isArray(swissData)) {
+										console.log('Swiss standings found (direct array):', swissData.length, 'players');
+										swissData.forEach(player => {
+											if (player.name && !standing.includes(player.name)) {
+												standing.push(player.name);
+											}
+										});
+									} else if (swissData.standings) {
+										console.log('Swiss standings found (in standings property):', swissData.standings.length, 'players');
 										swissData.standings.forEach(player => {
 											if (player.name && !standing.includes(player.name)) {
 												standing.push(player.name);
@@ -141,7 +155,9 @@
 										});
 									} else {
 										console.log('No Swiss standings found');
-									}										const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
+									}
+
+									const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
 										const teamsRes = await fetch(teamsUrl);
 										const teamsData = await teamsRes.json();
 										let nameTeam = new Map();
