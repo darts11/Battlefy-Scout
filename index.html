@@ -9,7 +9,7 @@
 		<title>Battlefy Scouting Tool</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="icon" href="/images/favicon.png" type="image/png">
+		<link rel="icon" href="images/favicon.png">
 		<link rel="stylesheet" href="assets/css/main.css" />
 	</head>
 	<body class="is-preload">
@@ -122,7 +122,7 @@
 										const li = document.createElement('li');
 										const playerText = document.createTextNode(player + "\t");
 										li.appendChild(playerText);
-										
+										li.appendChild("	");
 										const pasteUrl = nameTeam.get(player);
 										if (pasteUrl) {
 											const paste = document.createElement('a');
