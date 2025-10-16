@@ -40,100 +40,130 @@
 				<!-- Two -->
 					<section id="two">
 						<script>
-							document.addEventListener('DOMContentLoaded', function() {
+							console.log('Script loaded');
+							
+							// Initialize when DOM is ready or immediately if already ready
+							if (document.readyState === 'loading') {
+								document.addEventListener('DOMContentLoaded', initializeForm);
+							} else {
+								initializeForm();
+							}
+							
+							function initializeForm() {
+								console.log('Initializing form handler');
 								const formEl = document.querySelector('.form');
+								
 								if (!formEl) {
 									console.error('Form element not found');
 									return;
 								}
+								
+								console.log('Form found, adding event listener');
+								
 								formEl.addEventListener('submit', async (event) => {
-								event.preventDefault();
-								const formData = new FormData(formEl);
-								let link = formData.get('battlefylink');
-								
-								// Check if link is null or empty
-								if (!link || link.trim() === '') {
-									alert('Please enter a Battlefy link');
-									return;
-								}
-								
-								let splitLink = link.split('/');
-								let tourid = "";
-								if(splitLink[5] && splitLink[5].length == 24){
-									tourid = splitLink[5];
-								}
-								else{
-									for(let i = 0; i < splitLink.length; i++){
-										if(splitLink[i] && splitLink[i].length == 24){
-											tourid = splitLink[i];
+									console.log('Form submitted');
+									event.preventDefault();
+									
+									const formData = new FormData(formEl);
+									let link = formData.get('battlefylink');
+									console.log('Link from form:', link);
+									
+									// Check if link is null or empty
+									if (!link || link.trim() === '') {
+										alert('Please enter a Battlefy link');
+										return;
+									}
+									
+									// Clear the list immediately
+									let list = document.getElementById('myList');
+									console.log('List element found:', !!list);
+									
+									if (list) {
+										while(list.firstChild) {
+											list.removeChild(list.firstChild);
+										}
+										console.log('List cleared successfully');
+									}
+									
+									// Extract tournament ID
+									let splitLink = link.split('/');
+									let tourid = "";
+									if(splitLink[5] && splitLink[5].length == 24){
+										tourid = splitLink[5];
+									}
+									else{
+										for(let i = 0; i < splitLink.length; i++){
+											if(splitLink[i] && splitLink[i].length == 24){
+												tourid = splitLink[i];
+											}
 										}
 									}
-								}
+									
+									console.log('Tournament ID:', tourid);
+									
+									let mainurl = "https://api.battlefy.com/tournaments/" + tourid;
+									let standing = [];
+									
+									try{
+										const tournamentResponse = await fetch(mainurl);
+										const tournamentData = await tournamentResponse.json();
+										const [swissID, topcutID] = tournamentData.stageIDs || [];
 
-								// Clear the list immediately when form is submitted
-								let list = document.getElementById('myList');
-								while(list.firstChild) {
-									list.removeChild(list.firstChild);
-								}
+										const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
+										const tcResponse = await fetch(tcurl);
+										const tcData = await tcResponse.json();
+										if (tcData.standings) {
+											tcData.standings.forEach(player => {
+												if (player.name) standing.push(player.name);
+											});
+										}
 
-								let mainurl = "https://api.battlefy.com/tournaments/" + tourid;
-								let standing = [];
-								try{
-									const tournamentResponse = await fetch(mainurl);
-									const tournamentData = await tournamentResponse.json();
-									const [swissID, topcutID] = tournamentData.stageIDs || [];
-									console.log(swissID, topcutID);
+										const swissurl = "https://dtmwra1jsgyb0.cloudfront.net/stages/" + swissID + "/latest-round-standings";
+										const swissRes = await fetch(swissurl);
+										const swissData = await swissRes.json();
 
-									const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
-									const tcResponse = await fetch(tcurl);
-									const tcData = await tcResponse.json();
-									if (tcData.standings) {
-      									tcData.standings.forEach(player => {
-        									if (player.name) standing.push(player.name);
-      									});
-    								}
-									console.log(standing);
-									const swissurl = "https://dtmwra1jsgyb0.cloudfront.net/stages/" + swissID + "/latest-round-standings";
-									const swissRes = await fetch(swissurl);
-    								const swissData = await swissRes.json();
+										if (swissData.standings) {
+											swissData.standings.forEach(player => {
+												if (player.name && !standing.includes(player.name)) {
+													standing.push(player.name);
+												}
+											});
+										}
 
-    								if (swissData.standings) {
-      									swissData.standings.forEach(player => {
-        									if (player.name && !standing.includes(player.name)) {
-          										standing.push(player.name);
-        									}
-      									});
-    								}
-									console.log(standing);
-									const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
-									const teamsRes = await fetch(teamsUrl);
-    								const teamsData = await teamsRes.json();
-									let nameTeam = new Map();
-									if (teamsData) {
-      									teamsData.forEach(player => {
-        									nameTeam.set(player.name, player.customFields[1].value)
-      									});
-    								}
-									console.log(nameTeam);
-									standing.forEach(player => {
-										const li = document.createElement('li');
-										li.textContent = player + nameTeam.get(player);
-										document.getElementById('myList').appendChild(li);
-									});
-								}
-								catch{
-									alert('Standings failed to load. Check link or refresh.');
-								}
-							});
-						});
+										const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
+										const teamsRes = await fetch(teamsUrl);
+										const teamsData = await teamsRes.json();
+										let nameTeam = new Map();
+										if (teamsData) {
+											teamsData.forEach(player => {
+												if (player.customFields && player.customFields[1]) {
+													nameTeam.set(player.name, player.customFields[1].value);
+												}
+											});
+										}
+										
+										console.log('Found', standing.length, 'players');
+										console.log('Team mapping:', nameTeam);
+										
+										standing.forEach(player => {
+											const li = document.createElement('li');
+											const teamInfo = nameTeam.get(player) || '';
+											li.textContent = player + (teamInfo ? ' - ' + teamInfo : '');
+											list.appendChild(li);
+										});
+									}
+									catch(error){
+										console.error('Error:', error);
+										alert('Failed to load standings. Check the link and try again.');
+									}
+								});
+							}
 						</script>
 						<ol id="myList">
-    						
-  						</ol>
+						</ol>
 					</section>
-
-				
 			</div>
+
 		<!-- Footer -->
 			<footer id="footer">
 				<div class="inner">
