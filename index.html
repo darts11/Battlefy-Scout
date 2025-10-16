@@ -70,12 +70,19 @@
 									}
 								}
 
+								// Clear the list immediately when form is submitted
+								let list = document.getElementById('myList');
+								while(list.firstChild) {
+									list.removeChild(list.firstChild);
+								}
+
 								let mainurl = "https://api.battlefy.com/tournaments/" + tourid;
 								let standing = [];
 								try{
 									const tournamentResponse = await fetch(mainurl);
 									const tournamentData = await tournamentResponse.json();
 									const [swissID, topcutID] = tournamentData.stageIDs || [];
+									console.log(swissID, topcutID);
 
 									const tcurl = "https://d2jpovtdeeoi3i.cloudfront.net/stages/" + topcutID + "/elimination-standings";
 									const tcResponse = await fetch(tcurl);
@@ -85,7 +92,7 @@
         									if (player.name) standing.push(player.name);
       									});
     								}
-
+									console.log(standing);
 									const swissurl = "https://dtmwra1jsgyb0.cloudfront.net/stages/" + swissID + "/latest-round-standings";
 									const swissRes = await fetch(swissurl);
     								const swissData = await swissRes.json();
@@ -97,7 +104,7 @@
         									}
       									});
     								}
-
+									console.log(standing);
 									const teamsUrl = "https://api.battlefy.com/tournaments/" + tourid + "/teams";
 									const teamsRes = await fetch(teamsUrl);
     								const teamsData = await teamsRes.json();
@@ -107,12 +114,7 @@
         									nameTeam.set(player.name, player.customFields[1].value)
       									});
     								}
-
-									let list = document.getElementById('myList');
-									while(list.firstChild ){
-  										list.removeChild(list.firstChild );
-									}
-
+									console.log(nameTeam);
 									standing.forEach(player => {
 										const li = document.createElement('li');
 										li.textContent = player + nameTeam.get(player);
